@@ -2,23 +2,82 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>talmetal.me</title>
+    <title>GLB Model Viewer</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100dvh;
-        }
-        img {
-            height: 100%;
-            width: 100%;
-            object-fit: cover;
-        }
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
     </style>
 </head>
 <body>
-    <a href="metal.html"><img src="images/homepage_eye.jpg" alt=""></a>
+    <!-- Three.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/build/three.min.js"></script>
+
+    <!-- GLTFLoader -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/GLTFLoader.js"></script>
+
+    <!-- OrbitControls (Optional for user interaction) -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
+
+    <script>
+        // Scene
+        var scene = new THREE.Scene();
+
+        // Camera
+        var camera = new THREE.PerspectiveCamera(
+            75,                                     // Field of view
+            window.innerWidth / window.innerHeight, // Aspect ratio
+            0.1,                                    // Near clipping plane
+            1000                                    // Far clipping plane
+        );
+        camera.position.set(0, 2, 5);
+
+        // Renderer
+        var renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Lighting
+        var ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        var directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(0, 10, 10);
+        scene.add(directionalLight);
+
+        // OrbitControls
+        var controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        // GLTFLoader
+        var loader = new THREE.GLTFLoader();
+        loader.load(
+            'models/01_ShapKeyed_EyeBall.glb', // Replace with the path to your GLB file
+            function (gltf) {
+                scene.add(gltf.scene);
+            },
+            function (xhr) {
+                console.log((xhr.loaded / xhr.total * 100).toFixed(2) + '% loaded');
+            },
+            function (error) {
+                console.error('An error occurred:', error);
+            }
+        );
+
+        // Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle Window Resize
+        window.addEventListener('resize', function () {
+            var width = window.innerWidth;
+            var height = window.innerHeight;
+            renderer.setSize(width, height);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+        });
+    </script>
 </body>
 </html>
