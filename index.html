@@ -103,8 +103,8 @@
         // Function to update the pupil size
         function updatePupilSize(value) {
             var normalizedValue = (value - 1) / 10; // Normalize the value to a 0-1 range
-            if (pupilMesh && pupilMesh.morphTargetInfluences) {
-                pupilMesh.morphTargetInfluences[pupilMorphTargetIndex] = normalizedValue;
+            if (pupil && pupil.morphTargetInfluences) {
+                pupil.morphTargetInfluences[pupilMorphTargetIndex] = normalizedValue;
             }
         }
 
