@@ -29,7 +29,6 @@
             0.1,                                    // Near clipping plane
             1000                                    // Far clipping plane
         );
-        camera.position.set(0, 2, 5);
 
         // Renderer
         var renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -52,7 +51,26 @@
         loader.load(
             'models/01_ShapKeyed_EyeBall.glb', // Replace with the path to your GLB file
             function (gltf) {
-                scene.add(gltf.scene);
+                var model = gltf.scene;
+                scene.add(model);
+
+                // Compute the bounding box of the model
+                var box = new THREE.Box3().setFromObject(model);
+                var size = box.getSize(new THREE.Vector3());
+                var center = box.getCenter(new THREE.Vector3());
+
+                // Reposition the camera to be centered on the model
+                var maxDim = Math.max(size.x, size.y, size.z); // Get the largest dimension of the object
+                var fov = camera.fov * (Math.PI / 180); // Convert FOV to radians
+                var distance = (maxDim / 2) / Math.tan(fov / 2); // Calculate camera distance based on FOV and model size
+
+                // Move the camera to make the object 10% of the window height
+                camera.position.set(center.x, center.y, center.z + distance * 10); // Adjust for 10% of window height
+                camera.lookAt(center);
+
+                // Update controls target to the model's center
+                controls.target.copy(center);
+                controls.update();
             },
             function (xhr) {
                 console.log((xhr.loaded / xhr.total * 100).toFixed(2) + '% loaded');
