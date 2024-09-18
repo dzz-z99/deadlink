@@ -65,7 +65,7 @@
                 var distance = (maxDim / 2) / Math.tan(fov / 2); // Calculate camera distance based on FOV and model size
 
                 // Move the camera to make the object 10% of the window height
-                camera.position.set(center.x, center.y, center.z + distance * 10); // Adjust for 10% of window height
+                camera.position.set(center.x, center.y, center.z + (distance * 10) / 3); // Adjust for 300% zoom
                 camera.lookAt(center);
 
                 // Update controls target to the model's center
@@ -99,3 +99,4 @@
     </script>
 </body>
 </html>
+
