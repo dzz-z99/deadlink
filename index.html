@@ -49,9 +49,9 @@
         // OrbitControls
         var controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-        // Variable to store the pupil shape
-        var pupilMorphTargetIndex = null; // Placeholder for the pupil's key shape
-        var pupil = null; // Will be set once the mesh is loaded
+        // Variables to store the pupil shape and mesh
+        var pupilMorphTargetIndex = null;
+        var pupilMesh = null;
 
         // Load the GLB model
         var loader = new THREE.GLTFLoader();
@@ -59,9 +59,9 @@
             var model = gltf.scene;
             scene.add(model);
 
-            // Assume the pupil's shape key is on a mesh named 'PupilMesh' (adjust if necessary)
-            pupil = model.getObjectByName('Pupil'); // Replace with correct name of the pupil's mesh
-            if (pupil && pupil.morphTargetInfluences) {
+            // Get the mesh named "Pupil"
+            pupilMesh = model.getObjectByName('Pupil'); 
+            if (pupilMesh && pupilMesh.morphTargetInfluences) {
                 pupilMorphTargetIndex = 0; // Assuming the first morph target is for the pupil's size
             }
 
@@ -82,6 +82,10 @@
             controls.update();
         });
 
+        // Define the min and max values for the "Assigned Value"
+        var minValue = 1;
+        var maxValue = 5;
+
         // Function to fetch the Assigned Value from the API
         function fetchAssignedValue() {
             fetch(apiURL)
@@ -89,9 +93,13 @@
                 .then(data => {
                     var assignedValue = data["Assigned Value"];
 
-                    // Update the pupil size based on the API value
-                    if (pupilMorphTargetIndex !== null && pupil) {
-                        updatePupilSize(assignedValue);
+                    // Normalize the value to the 0-1 range based on the min and max values
+                    var normalizedValue = (assignedValue - minValue) / (maxValue - minValue);
+                    normalizedValue = Math.max(0, Math.min(1, normalizedValue)); // Clamp to [0, 1]
+
+                    // Update the pupil size based on the normalized value
+                    if (pupilMorphTargetIndex !== null && pupilMesh) {
+                        updatePupilSize(normalizedValue);
                     }
 
                     // Fetch the data again after a delay (for dynamic updates)
@@ -101,10 +109,9 @@
         }
 
         // Function to update the pupil size
-        function updatePupilSize(value) {
-            var normalizedValue = (value - 1) / 10; // Normalize the value to a 0-1 range
-            if (pupil && pupil.morphTargetInfluences) {
-                pupil.morphTargetInfluences[pupilMorphTargetIndex] = normalizedValue;
+        function updatePupilSize(normalizedValue) {
+            if (pupilMesh && pupilMesh.morphTargetInfluences) {
+                pupilMesh.morphTargetInfluences[pupilMorphTargetIndex] = normalizedValue;
             }
         }
 
@@ -127,5 +134,3 @@
     </script>
 </body>
 </html>
-
-
