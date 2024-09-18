@@ -51,7 +51,7 @@
 
         // Variable to store the pupil shape
         var pupilMorphTargetIndex = null; // Placeholder for the pupil's key shape
-        var pupilMesh = null; // Will be set once the mesh is loaded
+        var pupil = null; // Will be set once the mesh is loaded
 
         // Load the GLB model
         var loader = new THREE.GLTFLoader();
@@ -60,8 +60,8 @@
             scene.add(model);
 
             // Assume the pupil's shape key is on a mesh named 'PupilMesh' (adjust if necessary)
-            pupilMesh = model.getObjectByName('PupilMesh'); // Replace with correct name of the pupil's mesh
-            if (pupilMesh && pupilMesh.morphTargetInfluences) {
+            pupil = model.getObjectByName('Pupil'); // Replace with correct name of the pupil's mesh
+            if (pupil && pupil.morphTargetInfluences) {
                 pupilMorphTargetIndex = 0; // Assuming the first morph target is for the pupil's size
             }
 
@@ -90,7 +90,7 @@
                     var assignedValue = data["Assigned Value"];
 
                     // Update the pupil size based on the API value
-                    if (pupilMorphTargetIndex !== null && pupilMesh) {
+                    if (pupilMorphTargetIndex !== null && pupil) {
                         updatePupilSize(assignedValue);
                     }
 
