@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>GLB Model Viewer - Pupil Size Control</title>
+    <title>GLB Model Viewer - Pupil Centered</title>
     <style>
         body { margin: 0; overflow: hidden; }
         canvas { display: block; }
@@ -49,27 +49,33 @@
         // OrbitControls
         var controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-// Variables to store the pupil shape and mesh
-var pupilMorphTargetIndex = null;
-var pupilMesh = null;
+        // Variables to store the pupil shape and mesh
+        var pupilMorphTargetIndex = null;
+        var pupilMesh = null;
 
-// Load the GLB model
-var loader = new THREE.GLTFLoader();
-loader.load('models/01_ShapKeyed_EyeBall.glb', function (gltf) {
-    var model = gltf.scene;
-    scene.add(model);
+        // Load the GLB model
+        var loader = new THREE.GLTFLoader();
+        loader.load('models/01_ShapKeyed_EyeBall.glb', function (gltf) {
+            var model = gltf.scene;
+            
+            // Rotate the model to face the camera
+            model.rotation.x = 0; // Adjust rotation here if needed
+            model.rotation.y = 0; // Adjust this rotation if necessary
+            model.rotation.z = 0; // Adjust this rotation if necessary
+            
+            // Add the model to the scene
+            scene.add(model);
 
-    // Get the mesh named "Pupil"
-    pupilMesh = model.getObjectByName('Pupil'); 
-    if (pupilMesh && pupilMesh.morphTargetInfluences) {
-        pupilMorphTargetIndex = 0; // Assuming the first morph target is for the pupil's size
-    }
-
+            // Get the mesh named "Pupil"
+            pupilMesh = model.getObjectByName('Pupil'); 
+            if (pupilMesh && pupilMesh.morphTargetInfluences) {
+                pupilMorphTargetIndex = 0; // Assuming the first morph target is for the pupil's size
+            }
 
             // Fetch the initial API data and set up the update loop
             fetchAssignedValue();
 
-            // Set the model in the scene as usual
+            // Center the camera on the model as usual
             var box = new THREE.Box3().setFromObject(model);
             var size = box.getSize(new THREE.Vector3());
             var center = box.getCenter(new THREE.Vector3());
@@ -77,7 +83,9 @@ loader.load('models/01_ShapKeyed_EyeBall.glb', function (gltf) {
             var maxDim = Math.max(size.x, size.y, size.z);
             var fov = camera.fov * (Math.PI / 180);
             var distance = (maxDim / 2) / Math.tan(fov / 2);
-            camera.position.set(center.x, center.y, center.z + (distance * 10) / 8);
+
+            // Reposition the camera directly in front of the model and looking at the center
+            camera.position.set(center.x, center.y, center.z + distance * 1.5); // Move camera back a bit to view the eye
             camera.lookAt(center);
             controls.target.copy(center);
             controls.update();
