@@ -49,21 +49,22 @@
         // OrbitControls
         var controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-        // Variables to store the pupil shape and mesh
-        var pupilMorphTargetIndex = null;
-        var pupilMesh = null;
+// Variables to store the pupil shape and mesh
+var pupilMorphTargetIndex = null;
+var pupilMesh = null;
 
-        // Load the GLB model
-        var loader = new THREE.GLTFLoader();
-        loader.load('models/01_ShapKeyed_EyeBall.glb', function (gltf) {
-            var model = gltf.scene;
-            scene.add(model);
+// Load the GLB model
+var loader = new THREE.GLTFLoader();
+loader.load('models/01_ShapKeyed_EyeBall.glb', function (gltf) {
+    var model = gltf.scene;
+    scene.add(model);
 
-            // Get the mesh named "Pupil"
-            pupilMesh = model.getObjectByName('Pupil'); 
-            if (pupilMesh && pupilMesh.morphTargetInfluences) {
-                pupilMorphTargetIndex = 0; // Assuming the first morph target is for the pupil's size
-            }
+    // Get the mesh named "Pupil"
+    pupilMesh = model.getObjectByName('Pupil'); 
+    if (pupilMesh && pupilMesh.morphTargetInfluences) {
+        pupilMorphTargetIndex = 0; // Assuming the first morph target is for the pupil's size
+    }
+
 
             // Fetch the initial API data and set up the update loop
             fetchAssignedValue();
