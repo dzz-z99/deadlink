@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Model Viewer</title>
+    <title>4D Model Viewer</title>
     <style>
         body, html {
             margin: 0;
@@ -12,34 +12,43 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: white; /* White background for the margins */
+            background-color: black; /* Background of the 3D model viewer */
             overflow: hidden;
         }
 
-        /* The 3D model will be displayed inside this "window" */
-        #frame {
-            position: relative;
-            width: 90%;   /* 5% margin on the left and right (100% - 5% * 2) */
-            height: 60%;  /* 20% margin on the top and bottom (100% - 20% * 2) */
-            background-color: black; /* The window background for contrast */
-            overflow: hidden;
-        }
-
-        /* The WebGL canvas will take up the full space of the frame */
+        /* The WebGL canvas will take up the full screen */
         canvas {
-            position: absolute;
+            display: block;
             width: 100%;
             height: 100%;
-            display: block;
+        }
+
+        /* Overlay the transparent window with white margins */
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allow interactions with the WebGL canvas below */
+        }
+
+        /* The white margins */
+        #overlay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8); /* White with some opacity */
+            z-index: 10;
+            clip-path: inset(20% 5%); /* 20% top/bottom and 5% left/right transparent window */
         }
     </style>
 </head>
 <body>
-    <!-- Frame for displaying the 3D model -->
-    <div id="frame">
-        <!-- WebGL content (3D model) will be placed inside this frame -->
-    </div>
-
+    <!-- 3D Model Viewer will be in the background -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -51,9 +60,7 @@
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);  // Improve rendering quality
-
-        // Append renderer to the frame div
-        document.getElementById('frame').appendChild(renderer.domElement);
+        document.body.appendChild(renderer.domElement);
 
         // Move the camera closer for a more zoomed-in initial view
         camera.position.set(0, 0, 1.0);
@@ -144,12 +151,13 @@
 
         // Resize handling
         window.addEventListener('resize', function () {
-            const width = document.getElementById('frame').clientWidth;
-            const height = document.getElementById('frame').clientHeight;
-            renderer.setSize(width, height);
-            camera.aspect = width / height;
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
         });
     </script>
+
+    <!-- Overlay div for the window (white margins with transparent center) -->
+    <div id="overlay"></div>
 </body>
 </html>
