@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>11D Model Viewer</title>
+    <title>12D Model Viewer</title>
     <style>
         body, html {
             margin: 0;
@@ -35,7 +35,7 @@
         document.body.appendChild(renderer.domElement);
 
         // Move the camera closer for a more zoomed-in initial view
-        camera.position.set(0, 0, 0.5); 
+        camera.position.set(0, 0, 0.1); 
 
         // Add OrbitControls for zoom and rotation
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -43,7 +43,7 @@
         controls.dampingFactor = 0.05;
         controls.screenSpacePanning = false;
         controls.enableZoom = true;
-        controls.zoomSpeed = 1.0; // Make zooming faster and more responsive
+        controls.zoomSpeed = 0.5; // Make zooming faster and more responsive
         controls.maxDistance = 5;  // Restrict max distance
 
         // Light setup (ambient + directional light)
