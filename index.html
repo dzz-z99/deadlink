@@ -28,15 +28,18 @@
         // Scene, Camera, Renderer setup
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer();
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        camera.position.set(0, 0, 2); // Set a suitable camera distance for viewing the model
+        camera.position.set(0, 0, 3); // Set the camera position further to ensure visibility
 
-        // Light setup
-        const light = new THREE.AmbientLight(0xffffff, 1); // Soft white light
-        scene.add(light);
+        // Light setup (ambient + directional light)
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // Strong directional light
+        directionalLight.position.set(5, 5, 5);
+        scene.add(ambientLight);
+        scene.add(directionalLight);
 
         // Load the 3D model
         const loader = new THREE.GLTFLoader();
@@ -44,6 +47,7 @@
 
         loader.load('models/01_ShapKeyed_EyeBall.glb', function (gltf) {
             const model = gltf.scene;
+            model.scale.set(0.5, 0.5, 0.5); // Scale the model if it's too large or small
             scene.add(model);
 
             // Find the 'Pupil' mesh and access its morph target
@@ -54,12 +58,20 @@
             });
 
             animate();  // Start rendering after model is loaded
+            fetchAndUpdate(); // Start fetching API data for the first time
 
-            // Define the min and max range of "Assigned Value"
-            const minValue = 0;
-            const maxValue = 10;  // Adjust based on the expected range from the API
+            // Real-time API updates every 5 seconds
+            setInterval(fetchAndUpdate, 5000);
+        }, undefined, function (error) {
+            console.error('Error loading 3D model:', error);
+        });
 
-            // Fetch the dynamic value from the API and update the morph target
+        // Define the min and max range of "Assigned Value"
+        const minValue = 0;
+        const maxValue = 10;  // Adjust based on the expected range from the API
+
+        // Function to fetch the dynamic value from the API and update the morph target
+        function fetchAndUpdate() {
             fetch('https://script.googleusercontent.com/macros/echo?user_content_key=Fflmruejr3Wo1jyoVlmm2VC9-peixwr4Zsnif-T4yQ1j3KYNXylGhL-ponqbH7bgtcSKmFwa3JjgrBClAWvLRjEYhBt4KPwMm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnLOhP_Yv2g7cdzrEvHyGSNEVukO7LcfqB0E5Sla7ueR41jq5zjZBMj-uZS5JNTN58D-EWxpy17moBNLfIDa8OkjcGI7lhJ_ZLw&lib=MSykVP-T6JpMcNQKt2t8MtLlZCQc5u2io')
                 .then(response => response.json())
                 .then(data => {
@@ -77,9 +89,7 @@
                     }
                 })
                 .catch(err => console.error('Error fetching API data:', err));
-        }, undefined, function (error) {
-            console.error(error);
-        });
+        }
 
         // Animation loop
         function animate() {
