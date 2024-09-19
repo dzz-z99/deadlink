@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>5D Model Viewer</title>
+    <title>6D Model Viewer</title>
     <style>
         body, html {
             margin: 0;
@@ -41,9 +41,8 @@
         controls.enableDamping = true; // Smooth control
         controls.dampingFactor = 0.05;
         controls.screenSpacePanning = false;
-        controls.minDistance = 1;
-        controls.maxDistance = 10;
         controls.enableZoom = true;
+        controls.maxDistance = 10; // Remove minDistance for unlimited zoom in
 
         // Light setup (ambient + directional light)
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
@@ -86,8 +85,9 @@
             fetch('https://script.googleusercontent.com/macros/echo?user_content_key=Fflmruejr3Wo1jyoVlmm2VC9-peixwr4Zsnif-T4yQ1j3KYNXylGhL-ponqbH7bgtcSKmFwa3JjgrBClAWvLRjEYhBt4KPwMm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnLOhP_Yv2g7cdzrEvHyGSNEVukO7LcfqB0E5Sla7ueR41jq5zjZBMj-uZS5JNTN58D-EWxpy17moBNLfIDa8OkjcGI7lhJ_ZLw&lib=MSykVP-T6JpMcNQKt2t8MtLlZCQc5u2io')
                 .then(response => response.json())
                 .then(data => {
-                    const dynamicValue = data['Assigned Value']; // Extract the value
-
+                    // Select the first item's "Assigned Value" (change if another is needed)
+                    const dynamicValue = data[0]['Assigned Value']; // Change [0] to any index needed
+                    
                     // Normalize the dynamicValue to a range of 0 to 1
                     const normalizedValue = (dynamicValue - minValue) / (maxValue - minValue);
 
