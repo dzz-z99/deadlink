@@ -55,14 +55,25 @@
 
             animate();  // Start rendering after model is loaded
 
+            // Define the min and max range of "Assigned Value"
+            const minValue = 0;
+            const maxValue = 10;  // Adjust based on the expected range from the API
+
             // Fetch the dynamic value from the API and update the morph target
             fetch('https://script.googleusercontent.com/macros/echo?user_content_key=Fflmruejr3Wo1jyoVlmm2VC9-peixwr4Zsnif-T4yQ1j3KYNXylGhL-ponqbH7bgtcSKmFwa3JjgrBClAWvLRjEYhBt4KPwMm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnLOhP_Yv2g7cdzrEvHyGSNEVukO7LcfqB0E5Sla7ueR41jq5zjZBMj-uZS5JNTN58D-EWxpy17moBNLfIDa8OkjcGI7lhJ_ZLw&lib=MSykVP-T6JpMcNQKt2t8MtLlZCQc5u2io')
                 .then(response => response.json())
                 .then(data => {
                     const dynamicValue = data['Assigned Value']; // Extract the value
-                    const normalizedValue = dynamicValue / 10; // Normalize to the 0-1 range
+
+                    // Normalize the dynamicValue to a range of 0 to 1
+                    const normalizedValue = (dynamicValue - minValue) / (maxValue - minValue);
+
+                    // Ensure the value is clamped between 0 and 1
+                    const clampedValue = Math.min(Math.max(normalizedValue, 0), 1);
+
+                    // Apply the clampedValue to the morph target if pupilMesh exists
                     if (pupilMesh) {
-                        pupilMesh.morphTargetInfluences[0] = normalizedValue; // Apply the morphing target
+                        pupilMesh.morphTargetInfluences[0] = clampedValue;
                     }
                 })
                 .catch(err => console.error('Error fetching API data:', err));
