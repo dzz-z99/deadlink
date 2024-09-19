@@ -2,140 +2,84 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>GLB Model Viewer - Pupil Centered</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Model Viewer</title>
     <style>
-        body { margin: 0; overflow: hidden; }
-        canvas { display: block; }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
     </style>
 </head>
 <body>
-    <!-- Three.js Library -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/build/three.min.js"></script>
-
-    <!-- GLTFLoader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/GLTFLoader.js"></script>
-
-    <!-- OrbitControls (Optional for user interaction) -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
-
+    
     <script>
-        // API URL
-        var apiURL = 'https://script.googleusercontent.com/macros/echo?user_content_key=drCshnkWuXNLoJBnn6AoalfQD-o4_EFSGOBXyPzv_jFTaCorOwO3bhe8h0gDSwjMZBvJwGt5x_tDor8wFaXw0TkaLvQ_KVCjm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnLOhP_Yv2g7cdzrEvHyGSNEVukO7LcfqB0E5Sla7ueR41jq5zjZBMj-uZS5JNTN58D-EWxpy17moBNLfIDa8OkjcGI7lhJ_ZLw&lib=MSykVP-T6JpMcNQKt2t8MtLlZCQc5u2io';
-
-        // Scene
-        var scene = new THREE.Scene();
-
-        // Camera
-        var camera = new THREE.PerspectiveCamera(
-            75,                                     // Field of view
-            window.innerWidth / window.innerHeight, // Aspect ratio
-            0.1,                                    // Near clipping plane
-            1000                                    // Far clipping plane
-        );
-
-        // Renderer
-        var renderer = new THREE.WebGLRenderer({ antialias: true });
+        // Scene, Camera, Renderer setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // Lighting
-        var ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-        scene.add(ambientLight);
+        camera.position.set(0, 0, 2); // Set a suitable camera distance for viewing the model
 
-        var directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight.position.set(0, 10, 10);
-        scene.add(directionalLight);
+        // Light setup
+        const light = new THREE.AmbientLight(0xffffff, 1); // Soft white light
+        scene.add(light);
 
-        // OrbitControls
-        var controls = new THREE.OrbitControls(camera, renderer.domElement);
+        // Load the 3D model
+        const loader = new THREE.GLTFLoader();
+        let pupilMesh;
 
-        // Variables to store the pupil shape and mesh
-        var pupilMorphTargetIndex = null;
-        var pupilMesh = null;
-
-        // Load the GLB model
-        var loader = new THREE.GLTFLoader();
         loader.load('models/01_ShapKeyed_EyeBall.glb', function (gltf) {
-            var model = gltf.scene;
-            
-            // Rotate the model to face the camera
-            model.rotation.x = -0.2; // Adjust rotation here if needed
-            model.rotation.y = 0.2; // Adjust this rotation if necessary
-            model.rotation.z = 0; // Adjust this rotation if necessary
-            
-            // Add the model to the scene
+            const model = gltf.scene;
             scene.add(model);
 
-            // Get the mesh named "Pupil"
-            pupilMesh = model.getObjectByName('Pupil'); 
-            if (pupilMesh && pupilMesh.morphTargetInfluences) {
-                pupilMorphTargetIndex = 0; // Assuming the first morph target is for the pupil's size
-            }
+            // Find the 'Pupil' mesh and access its morph target
+            model.traverse(function (child) {
+                if (child.isMesh && child.name === 'Pupil') {
+                    pupilMesh = child;
+                }
+            });
 
-            // Fetch the initial API data and set up the update loop
-            fetchAssignedValue();
+            animate();  // Start rendering after model is loaded
 
-            // Center the camera on the model as usual
-            var box = new THREE.Box3().setFromObject(model);
-            var size = box.getSize(new THREE.Vector3());
-            var center = box.getCenter(new THREE.Vector3());
-
-            var maxDim = Math.max(size.x, size.y, size.z);
-            var fov = camera.fov * (Math.PI / 180);
-            var distance = (maxDim / 2) / Math.tan(fov / 2);
-
-            // Reposition the camera directly in front of the model and looking at the center
-            camera.position.set(center.x, center.y, center.z + distance * 1.5); // Move camera back a bit to view the eye
-            camera.lookAt(center);
-            controls.target.copy(center);
-            controls.update();
-        });
-
-        // Define the min and max values for the "Assigned Value"
-        var minValue = 1;
-        var maxValue = 5;
-
-        // Function to fetch the Assigned Value from the API
-        function fetchAssignedValue() {
-            fetch(apiURL)
+            // Fetch the dynamic value from the API and update the morph target
+            fetch('https://script.googleusercontent.com/macros/echo?user_content_key=Fflmruejr3Wo1jyoVlmm2VC9-peixwr4Zsnif-T4yQ1j3KYNXylGhL-ponqbH7bgtcSKmFwa3JjgrBClAWvLRjEYhBt4KPwMm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnLOhP_Yv2g7cdzrEvHyGSNEVukO7LcfqB0E5Sla7ueR41jq5zjZBMj-uZS5JNTN58D-EWxpy17moBNLfIDa8OkjcGI7lhJ_ZLw&lib=MSykVP-T6JpMcNQKt2t8MtLlZCQc5u2io')
                 .then(response => response.json())
                 .then(data => {
-                    var assignedValue = data["Assigned Value"];
-
-                    // Normalize the value to the 0-1 range based on the min and max values
-                    var normalizedValue = (assignedValue - minValue) / (maxValue - minValue);
-                    normalizedValue = Math.max(0, Math.min(1, normalizedValue)); // Clamp to [0, 1]
-
-                    // Update the pupil size based on the normalized value
-                    if (pupilMorphTargetIndex !== null && pupilMesh) {
-                        updatePupilSize(normalizedValue);
+                    const dynamicValue = data['Assigned Value']; // Extract the value
+                    const normalizedValue = dynamicValue / 10; // Normalize to the 0-1 range
+                    if (pupilMesh) {
+                        pupilMesh.morphTargetInfluences[0] = normalizedValue; // Apply the morphing target
                     }
-
-                    // Fetch the data again after a delay (for dynamic updates)
-                    setTimeout(fetchAssignedValue, 4000); // Fetch every 4 seconds (adjust as needed)
                 })
-                .catch(error => console.error('Error fetching API data:', error));
-        }
+                .catch(err => console.error('Error fetching API data:', err));
+        }, undefined, function (error) {
+            console.error(error);
+        });
 
-        // Function to update the pupil size
-        function updatePupilSize(normalizedValue) {
-            if (pupilMesh && pupilMesh.morphTargetInfluences) {
-                pupilMesh.morphTargetInfluences[pupilMorphTargetIndex] = normalizedValue;
-            }
-        }
-
-        // Animation Loop
+        // Animation loop
         function animate() {
             requestAnimationFrame(animate);
-            controls.update();
             renderer.render(scene, camera);
         }
-        animate();
 
-        // Handle Window Resize
+        // Resize handling
         window.addEventListener('resize', function () {
-            var width = window.innerWidth;
-            var height = window.innerHeight;
+            const width = window.innerWidth;
+            const height = window.innerHeight;
             renderer.setSize(width, height);
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
