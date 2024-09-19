@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>6D Model Viewer</title>
+    <title>7D Model Viewer</title>
     <style>
         body, html {
             margin: 0;
@@ -57,8 +57,18 @@
 
         loader.load('models/01_ShapKeyed_EyeBall.glb', function (gltf) {
             const model = gltf.scene;
+
+            // Center the model geometry
+            const box = new THREE.Box3().setFromObject(model);
+            const center = box.getCenter(new THREE.Vector3());
+            model.position.sub(center); // Adjust position so the model is centered
+
             model.scale.set(0.5, 0.5, 0.5); // Scale the model if it's too large or small
             scene.add(model);
+
+            // Center the camera controls on the model
+            controls.target.copy(center);
+            controls.update();
 
             // Find the 'Pupil' mesh and access its morph target
             model.traverse(function (child) {
