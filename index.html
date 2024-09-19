@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Model Viewer</title>
+    <title>13D Model Viewer</title>
     <style>
         body, html {
             margin: 0;
@@ -13,38 +13,19 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: white; /* White background for the margins */
+            background-color: #000;
             overflow: hidden;
         }
-
-        /* The 3D model will be displayed inside this "window" */
-        #frame {
-            position: relative;
-            width: 90%;   /* 5% margin on the left and right (100% - 5% * 2) */
-            height: 60%;  /* 20% margin on the top and bottom (100% - 20% * 2) */
-            background-color: black; /* The window background for contrast */
-            overflow: hidden;
-        }
-
-        /* The WebGL canvas will take up the full space of the frame */
         canvas {
-            position: absolute;
-            width: 100%;
-            height: 100%;
             display: block;
         }
     </style>
 </head>
 <body>
-    <!-- Frame for displaying the 3D model -->
-    <div id="frame">
-        <!-- WebGL content (3D model) will be placed inside this frame -->
-    </div>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/GLTFLoader.js"></script>
-
+    
     <script>
         // Scene, Camera, Renderer setup
         const scene = new THREE.Scene();
@@ -52,12 +33,10 @@
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);  // Improve rendering quality
-
-        // Append renderer to the frame div
-        document.getElementById('frame').appendChild(renderer.domElement);
+        document.body.appendChild(renderer.domElement);
 
         // Move the camera closer for a more zoomed-in initial view
-        camera.position.set(0, 0, 1.0);
+        camera.position.set(0, 0, 0.3); 
 
         // Add OrbitControls for zoom and rotation
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -65,7 +44,7 @@
         controls.dampingFactor = 0.05;
         controls.screenSpacePanning = false;
         controls.enableZoom = true;
-        controls.zoomSpeed = 2.0; // Make zooming faster and more responsive
+        controls.zoomSpeed = 0.5; // Make zooming faster and more responsive
         controls.maxDistance = 5;  // Restrict max distance
 
         // Light setup (ambient + directional light)
@@ -145,8 +124,8 @@
 
         // Resize handling
         window.addEventListener('resize', function () {
-            const width = document.getElementById('frame').clientWidth;
-            const height = document.getElementById('frame').clientHeight;
+            const width = window.innerWidth;
+            const height = window.innerHeight;
             renderer.setSize(width, height);
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
