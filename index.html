@@ -17,6 +17,7 @@
 <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     
     <script>
         // Initialize the scene, camera, and renderer
@@ -46,18 +47,15 @@
             // Position the model at the center of the scene
             model.position.set(0, 0, 0);
 
-            // Zoom the camera closer to the model
-            camera.position.set(0, 1, 2);  // Camera closer and slightly above the model
-
             // Start rendering the scene
             animate();
         }, undefined, function (error) {
             console.error(error);
         });
 
-        // Normalize the API's "Assigned Value" to the 0-1 range for the morph target
+        // Normalize the API's "Assigned Value" to the 0-5 range for the morph target
         function normalizeValue(value, minValue, maxValue) {
-            return (value - minValue) / (maxValue - minValue);
+            return (value - minValue) / (maxValue - minValue) * 5; // New range: 0 to 5
         }
 
         // Fetch the API value periodically
@@ -67,14 +65,14 @@
                 const data = await response.json();
                 const assignedValue = data[0]["Assigned Value"];
                 
-                // Normalize the value between 0 and 1 (assuming max Assigned Value = 919)
-                const normalizedValue = normalizeValue(assignedValue, 0, 919);
-                
+                // Normalize the value between 0 and 5
+                const normalizedValue = normalizeValue(assignedValue, 0, 919); // assuming max = 919
+
                 // Apply the normalized value to the mesh shape key (morph target)
                 if (model) {
                     const mesh = model.getObjectByName('00_SIZE');
                     if (mesh && mesh.morphTargetInfluences) {
-                        mesh.morphTargetInfluences[0] = normalizedValue; // Assuming the shape key is the first morph target
+                        mesh.morphTargetInfluences[0] = normalizedValue / 5; // Adjust to fit the 0-1 range for the morph
                     }
                 }
             } catch (error) {
@@ -82,9 +80,20 @@
             }
         }
 
+        // Add OrbitControls for zooming and panning
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true; // Smooth controls
+        controls.dampingFactor = 0.1;
+        controls.minDistance = 0.5; // Minimum zoom distance
+        controls.maxDistance = 10;  // Maximum zoom distance
+
+        // Zoom the camera closer to the model
+        camera.position.set(0, 1, 1);  // Move closer to the model
+        
         // Animate the scene and update the model
         function animate() {
             requestAnimationFrame(animate);
+            controls.update(); // Update controls on each frame
             renderer.render(scene, camera);
         }
 
