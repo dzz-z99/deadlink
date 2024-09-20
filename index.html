@@ -1,19 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>13D Model Viewer</title>
+    <title>001 Model with Dynamic Shape Key</title>
     <style>
-        body, html {
+        body {
             margin: 0;
-            padding: 0;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #000;
             overflow: hidden;
         }
         canvas {
@@ -22,113 +15,75 @@
     </style>
 </head>
 <body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     
     <script>
-        // Scene, Camera, Renderer setup
+        // Initialize the scene, camera, and renderer
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        const renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);  // Improve rendering quality
         document.body.appendChild(renderer.domElement);
-
-        // Move the camera closer for a more zoomed-in initial view
-        camera.position.set(0, 0, 0.3); 
-
-        // Add OrbitControls for zoom and rotation
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true; // Smooth control
-        controls.dampingFactor = 0.05;
-        controls.screenSpacePanning = false;
-        controls.enableZoom = true;
-        controls.zoomSpeed = 0.5; // Make zooming faster and more responsive
-        controls.maxDistance = 5;  // Restrict max distance
-
-        // Light setup (ambient + directional light)
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // Strong directional light
-        directionalLight.position.set(5, 5, 5);
-        scene.add(ambientLight);
-        scene.add(directionalLight);
-
-        // Load the 3D model
+        
+        let model;
         const loader = new THREE.GLTFLoader();
-        let pupilMesh;
-
-        loader.load('models/01_ShapKeyed_EyeBall.glb', function (gltf) {
-            const model = gltf.scene;
-
-            // Center the model geometry using its bounding box
-            const box = new THREE.Box3().setFromObject(model);
-            const center = box.getCenter(new THREE.Vector3());
-            model.position.sub(center); // Adjust position so the model is centered
-
-            model.scale.set(1.0, 1.0, 1.0); // Keep model larger
+        
+        // Load the GLB model
+        loader.load('models/03_ShapeKey_TEST.glb', function (gltf) {
+            model = gltf.scene;
             scene.add(model);
+            
+            // Position the camera to view the model
+            camera.position.z = 5;
 
-            // Center the camera controls on the model
-            controls.target.copy(center);
-            controls.update();
-
-            // Find the 'Pupil' mesh and access its morph target
-            model.traverse(function (child) {
-                if (child.isMesh && child.name === 'Pupil') {
-                    pupilMesh = child;
-                }
-            });
-
-            animate();  // Start rendering after model is loaded
-            fetchAndUpdate(); // Start fetching API data for the first time
-
-            // Real-time API updates every 5 seconds
-            setInterval(fetchAndUpdate, 5000);
+            // Start rendering the scene
+            animate();
         }, undefined, function (error) {
-            console.error('Error loading 3D model:', error);
+            console.error(error);
         });
 
-        // Define the min and max range of "Assigned Value"
-        const minValue = 0;
-        const maxValue = 10;  // Adjust based on the expected range from the API
-
-        // Function to fetch the dynamic value from the API and update the morph target
-        function fetchAndUpdate() {
-            fetch('https://script.googleusercontent.com/macros/echo?user_content_key=Fflmruejr3Wo1jyoVlmm2VC9-peixwr4Zsnif-T4yQ1j3KYNXylGhL-ponqbH7bgtcSKmFwa3JjgrBClAWvLRjEYhBt4KPwMm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnLOhP_Yv2g7cdzrEvHyGSNEVukO7LcfqB0E5Sla7ueR41jq5zjZBMj-uZS5JNTN58D-EWxpy17moBNLfIDa8OkjcGI7lhJ_ZLw&lib=MSykVP-T6JpMcNQKt2t8MtLlZCQc5u2io')
-                .then(response => response.json())
-                .then(data => {
-                    // Select the first item's "Assigned Value" (change if another is needed)
-                    const dynamicValue = data[0]['Assigned Value']; // Change [0] to any index needed
-                    
-                    // Normalize the dynamicValue to a range of 0 to 1
-                    const normalizedValue = (dynamicValue - minValue) / (maxValue - minValue);
-
-                    // Ensure the value is clamped between 0 and 1
-                    const clampedValue = Math.min(Math.max(normalizedValue, 0), 1);
-
-                    // Apply the clampedValue to the morph target if pupilMesh exists
-                    if (pupilMesh) {
-                        pupilMesh.morphTargetInfluences[0] = clampedValue;
-                    }
-                })
-                .catch(err => console.error('Error fetching API data:', err));
+        // Normalize the API's "Assigned Value" to the 0-1 range for the morph target
+        function normalizeValue(value, minValue, maxValue) {
+            return (value - minValue) / (maxValue - minValue);
         }
 
-        // Animation loop
+        // Fetch the API value periodically
+        async function fetchAPIValue() {
+            try {
+                const response = await fetch('https://script.googleusercontent.com/macros/echo?user_content_key=Fflmruejr3Wo1jyoVlmm2VC9-peixwr4Zsnif-T4yQ1j3KYNXylGhL-ponqbH7bgtcSKmFwa3JjgrBClAWvLRjEYhBt4KPwMm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnLOhP_Yv2g7cdzrEvHyGSNEVukO7LcfqB0E5Sla7ueR41jq5zjZBMj-uZS5JNTN58D-EWxpy17moBNLfIDa8OkjcGI7lhJ_ZLw&lib=MSykVP-T6JpMcNQKt2t8MtLlZCQc5u2io');
+                const data = await response.json();
+                const assignedValue = data[0]["Assigned Value"];
+                
+                // Normalize the value between 0 and 1 (assuming max Assigned Value = 919)
+                const normalizedValue = normalizeValue(assignedValue, 0, 919);
+                
+                // Apply the normalized value to the mesh shape key (morph target)
+                if (model) {
+                    const mesh = model.getObjectByName('00_SIZE');
+                    if (mesh && mesh.morphTargetInfluences) {
+                        mesh.morphTargetInfluences[0] = normalizedValue; // Assuming the shape key is the first morph target
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching API value:', error);
+            }
+        }
+
+        // Animate the scene and update the model
         function animate() {
             requestAnimationFrame(animate);
-            controls.update(); // Update controls in the animation loop
             renderer.render(scene, camera);
         }
 
-        // Resize handling
-        window.addEventListener('resize', function () {
-            const width = window.innerWidth;
-            const height = window.innerHeight;
-            renderer.setSize(width, height);
-            camera.aspect = width / height;
+        // Fetch the API value every 5 seconds to update the morph target
+        setInterval(fetchAPIValue, 5000);
+
+        // Resize the canvas on window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
         });
     </script>
 </body>
