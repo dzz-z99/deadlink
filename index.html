@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Model with Shape Key</title>
+    <title>3D Model with API-Driven Shape Key</title>
     <style>
-        body, html {
+        body {
             margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 100vh;
             background-color: #f0f0f0;
         }
         canvas {
@@ -22,85 +20,72 @@
     </style>
 </head>
 <body>
-<canvas id="webgl-canvas"></canvas>
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three@0.150.0/build/three.module.js';
+        import { GLTFLoader } from 'https://unpkg.com/three@0.150.0/examples/jsm/loaders/GLTFLoader.js';
+        import { OrbitControls } from 'https://unpkg.com/three@0.150.0/examples/jsm/controls/OrbitControls.js';
 
-<script type="module">
-    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.144.0/build/three.module.js';
-    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.144.0/examples/jsm/loaders/GLTFLoader.js';
-    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.144.0/examples/jsm/controls/OrbitControls.js';
+        // Setup scene, camera, renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
 
-    // Set up the scene, camera, and renderer
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('webgl-canvas'), antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+        // Add lighting
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(0, 1, 1).normalize();
+        scene.add(light);
 
-    // Lighting
-    const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(5, 5, 5).normalize();
-    scene.add(light);
+        // Set camera initial position
+        camera.position.set(0, 1, 3);
 
-    // Orbit Controls for zoom and pan
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableZoom = true;
-    controls.maxDistance = 50;
-    controls.minDistance = 5;
+        // Add OrbitControls for zooming
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.25;
+        controls.enableZoom = true;
 
-    // Load the GLTF model
-    const loader = new GLTFLoader();
-    let discMesh;
-    loader.load('models/06_ShapeKey_TEST_Disc.glb', (gltf) => {
-        scene.add(gltf.scene);
-        discMesh = gltf.scene.getObjectByName('cylinder.001');
+        // Load GLTF model
+        const loader = new GLTFLoader();
+        loader.load('models/06_ShapeKey_TEST_Disc.glb', function(gltf) {
+            const model = gltf.scene;
+            scene.add(model);
 
-        // Set camera position and zoom in front of the model
-        camera.position.set(0, 0, 10);
-        controls.update();
-        
-        // Fetch the API and update the shape key
-        fetchAPIAndUpdateShapeKey();
-    });
+            const cylinder001 = model.getObjectByName('cylinder.001');
+            if (cylinder001 && cylinder001.morphTargetInfluences) {
+                // Fetch data from API and normalize the value
+                fetch('https://script.googleusercontent.com/macros/echo?user_content_key=Fflmruejr3Wo1jyoVlmm2VC9-peixwr4Zsnif-T4yQ1j3KYNXylGhL-ponqbH7bgtcSKmFwa3JjgrBClAWvLRjEYhBt4KPwMm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnLOhP_Yv2g7cdzrEvHyGSNEVukO7LcfqB0E5Sla7ueR41jq5zjZBMj-uZS5JNTN58D-EWxpy17moBNLfIDa8OkjcGI7lhJ_ZLw&lib=MSykVP-T6JpMcNQKt2t8MtLlZCQc5u2io')
+                    .then(response => response.json())
+                    .then(data => {
+                        const apiValue = data[0]["Assigned Value"];
+                        // Normalize the API value to the 0-1 range for the DiscSize shape key
+                        const normalizedValue = (apiValue - 0) / (5 - 0);
+                        // Set the shape key value (DiscSize)
+                        cylinder001.morphTargetInfluences[0] = normalizedValue;
+                    })
+                    .catch(error => console.error('Error fetching API data:', error));
+            }
 
-    // Fetch API, normalize the value, and apply it to the DiscSize Shape Key
-    function fetchAPIAndUpdateShapeKey() {
-        fetch('https://script.googleusercontent.com/macros/echo?user_content_key=Fflmruejr3Wo1jyoVlmm2VC9-peixwr4Zsnif-T4yQ1j3KYNXylGhL-ponqbH7bgtcSKmFwa3JjgrBClAWvLRjEYhBt4KPwMm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnLOhP_Yv2g7cdzrEvHyGSNEVukO7LcfqB0E5Sla7ueR41jq5zjZBMj-uZS5JNTN58D-EWxpy17moBNLfIDa8OkjcGI7lhJ_ZLw&lib=MSykVP-T6JpMcNQKt2t8MtLlZCQc5u2io')
-            .then(response => response.json())
-            .then(data => {
-                // Extract the desired Assigned Value
-                const assignedValue = data.find(item => item["Assigned Value"] == 2.218503937007874)["Assigned Value"];
-                
-                // Normalize the value to fit within 0-1
-                const normalizedValue = normalizeValue(assignedValue, 0, 5);
+            animate();
+        }, undefined, function(error) {
+            console.error('Error loading the GLB model:', error);
+        });
 
-                // Apply the normalized value to the shape key (DiscSize)
-                if (discMesh) {
-                    discMesh.morphTargetInfluences[discMesh.morphTargetDictionary['DiscSize']] = normalizedValue;
-                }
-            })
-            .catch(error => console.error('Error fetching the API:', error));
-    }
+        // Handle resizing
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
 
-    // Normalize function: maps value from one range to another (0-5 to 0-1)
-    function normalizeValue(value, min, max) {
-        return (value - min) / (max - min);
-    }
-
-    // Render loop
-    function animate() {
-        requestAnimationFrame(animate);
-        renderer.render(scene, camera);
-    }
-    animate();
-
-    // Handle window resizing
-    window.addEventListener('resize', () => {
-        const width = window.innerWidth;
-        const height = window.innerHeight;
-        renderer.setSize(width, height);
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
-    });
-</script>
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+    </script>
 </body>
 </html>
+
