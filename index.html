@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>001 Model with Dynamic Shape Key</title>
+    <title>3D Model with Dynamic Shape Key</title>
     <style>
         body {
             margin: 0;
@@ -25,7 +25,16 @@
         const renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
-        
+
+        // Add ambient light for general illumination
+        const ambientLight = new THREE.AmbientLight(0x404040, 2); // Softer ambient light
+        scene.add(ambientLight);
+
+        // Add directional light to highlight the object
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 2); // Bright light
+        directionalLight.position.set(5, 5, 5).normalize(); // Set position of light
+        scene.add(directionalLight);
+
         let model;
         const loader = new THREE.GLTFLoader();
         
@@ -33,9 +42,12 @@
         loader.load('models/03_ShapeKey_TEST.glb', function (gltf) {
             model = gltf.scene;
             scene.add(model);
-            
-            // Position the camera to view the model
-            camera.position.z = 5;
+
+            // Position the model at the center of the scene
+            model.position.set(0, 0, 0);
+
+            // Zoom the camera closer to the model
+            camera.position.set(0, 1, 2);  // Camera closer and slightly above the model
 
             // Start rendering the scene
             animate();
