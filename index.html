@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Model Viewer</title>
+    <title>5D Model Viewer</title>
     <style>
         body, html {
             margin: 0;
@@ -55,7 +55,7 @@
 
             // Load GLTF model
             const loader = new GLTFLoader();
-            loader.load('models/06_ShapeKey_TEST.glb', (gltf) => {
+            loader.load('models/06_ShapeKey_TEST_Disc.glb', (gltf) => {
                 model = gltf.scene;
                 scene.add(model);
 
