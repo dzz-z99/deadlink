@@ -55,7 +55,7 @@
             const cylinder001 = model.getObjectByName('cylinder.001');
             if (cylinder001 && cylinder001.morphTargetInfluences) {
                 // Fetch data from API and normalize the value
-                fetch('https://script.googleusercontent.com/macros/echo?user_content_key=Fflmruejr3Wo1jyoVlmm2VC9-peixwr4Zsnif-T4yQ1j3KYNXylGhL-ponqbH7bgtcSKmFwa3JjgrBClAWvLRjEYhBt4KPwMm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnLOhP_Yv2g7cdzrEvHyGSNEVukO7LcfqB0E5Sla7ueR41jq5zjZBMj-uZS5JNTN58D-EWxpy17moBNLfIDa8OkjcGI7lhJ_ZLw&lib=MSykVP-T6JpMcNQKt2t8MtLlZCQc5u2io')
+                fetch('https://script.googleusercontent.com/macros/echo?user_content_key=H_r5uwp_XlijZ5TzbGcqHMilMwepE3pdSDLRLBSeLeYcARL7_ucFGrGbex0-gXZwduiWpfM1y7nlt_WHsld6cLC4aXPLFWg5m5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnLOhP_Yv2g7cdzrEvHyGSNEVukO7LcfqB0E5Sla7ueR41jq5zjZBMj-uZS5JNTN58D-EWxpy17moBNLfIDa8OkjcGI7lhJ_ZLw&lib=MSykVP-T6JpMcNQKt2t8MtLlZCQc5u2io')
                     .then(response => response.json())
                     .then(data => {
                         const apiValue = data[0]["Assigned Value"];
