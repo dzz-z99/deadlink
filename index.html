@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Model Viewer</title>
+  <title>4D Model Viewer</title>
   <style>
     body, html {
       margin: 0;
@@ -67,22 +67,34 @@
         mesh = gltf.scene;
         scene.add(mesh);
 
+        // Log mesh names to identify correct mesh
+        console.log('Loaded GLB model:', mesh);
+        mesh.traverse((child) => {
+          if (child.isMesh) {
+            console.log('Mesh found:', child.name); // Log all mesh names
+          }
+        });
+
         // Fetch data from the API and normalize the Assigned Value to the range 0-5
         fetch('https://script.googleusercontent.com/macros/echo?user_content_key=Fflmruejr3Wo1jyoVlmm2VC9-peixwr4Zsnif-T4yQ1j3KYNXylGhL-ponqbH7bgtcSKmFwa3JjgrBClAWvLRjEYhBt4KPwMm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnLOhP_Yv2g7cdzrEvHyGSNEVukO7LcfqB0E5Sla7ueR41jq5zjZBMj-uZS5JNTN58D-EWxpy17moBNLfIDa8OkjcGI7lhJ_ZLw&lib=MSykVP-T6JpMcNQKt2t8MtLlZCQc5u2io')
           .then(response => response.json())
           .then(data => {
-            // Get the assigned value and normalize it
             const assignedValue = 2.218503937007874;
             const normalizedValue = assignedValue / 5; // Normalize to 0-1 range
 
-            // Access the shape key and apply the normalized value
-            const skinnedMesh = mesh.getObjectByName('YourMeshName'); // Replace with the actual mesh name
-            if (skinnedMesh.morphTargetInfluences) {
-              skinnedMesh.morphTargetInfluences[0] = normalizedValue; // Apply to Shape Key '00_SIZE'
+            // Find the mesh that holds the shape key
+            const targetMesh = mesh.getObjectByName('YourMeshName'); // Replace with actual mesh name
+            if (targetMesh && targetMesh.morphTargetInfluences) {
+              console.log('Applying normalized value to shape key:', normalizedValue);
+              targetMesh.morphTargetInfluences[0] = normalizedValue; // Apply to Shape Key '00_SIZE'
+            } else {
+              console.error('Mesh with morph targets not found!');
             }
 
             animate();
           });
+      }, undefined, function(error) {
+        console.error('Error loading the model:', error);
       });
     }
 
