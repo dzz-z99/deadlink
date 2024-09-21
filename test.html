@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>4D Model Viewer</title>
+  <title>3D Model Viewer</title>
   <style>
     body, html {
       margin: 0;
@@ -72,6 +72,14 @@
         mesh.traverse((child) => {
           if (child.isMesh) {
             console.log('Mesh found:', child.name); // Log all mesh names
+
+            // Check if the mesh has morph targets
+            if (child.morphTargetInfluences) {
+              console.log('Morph Target Influences:', child.morphTargetInfluences);
+              console.log('Morph Target Dictionary:', child.morphTargetDictionary);
+            } else {
+              console.warn(`No morph targets found on mesh: ${child.name}`);
+            }
           }
         });
 
@@ -83,12 +91,12 @@
             const normalizedValue = assignedValue / 5; // Normalize to 0-1 range
 
             // Find the mesh that holds the shape key
-            const targetMesh = mesh.getObjectByName('Torus'); // Replace with actual mesh name
+            const targetMesh = mesh.getObjectByName('Torus'); // Mesh name is 'Torus'
             if (targetMesh && targetMesh.morphTargetInfluences) {
               console.log('Applying normalized value to shape key:', normalizedValue);
               targetMesh.morphTargetInfluences[0] = normalizedValue; // Apply to Shape Key '00_SIZE'
             } else {
-              console.error('Mesh with morph targets not found!');
+              console.error('Mesh with morph targets not found or no morph targets present on Torus!');
             }
 
             animate();
