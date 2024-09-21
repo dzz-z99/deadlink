@@ -83,7 +83,7 @@
             const normalizedValue = assignedValue / 5; // Normalize to 0-1 range
 
             // Find the mesh that holds the shape key
-            const targetMesh = mesh.getObjectByName('YourMeshName'); // Replace with actual mesh name
+            const targetMesh = mesh.getObjectByName('Torus'); // Replace with actual mesh name
             if (targetMesh && targetMesh.morphTargetInfluences) {
               console.log('Applying normalized value to shape key:', normalizedValue);
               targetMesh.morphTargetInfluences[0] = normalizedValue; // Apply to Shape Key '00_SIZE'
