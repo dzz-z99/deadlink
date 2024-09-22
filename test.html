@@ -83,27 +83,33 @@
           }
         });
 
-        // Fetch data from the API and normalize the Assigned Value to the range 0-5
-        fetch('https://script.googleusercontent.com/macros/echo?user_content_key=Fflmruejr3Wo1jyoVlmm2VC9-peixwr4Zsnif-T4yQ1j3KYNXylGhL-ponqbH7bgtcSKmFwa3JjgrBClAWvLRjEYhBt4KPwMm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnLOhP_Yv2g7cdzrEvHyGSNEVukO7LcfqB0E5Sla7ueR41jq5zjZBMj-uZS5JNTN58D-EWxpy17moBNLfIDa8OkjcGI7lhJ_ZLw&lib=MSykVP-T6JpMcNQKt2t8MtLlZCQc5u2io')
-          .then(response => response.json())
-          .then(data => {
-            const assignedValue = 2.218503937007874;
-            const normalizedValue = assignedValue / 5; // Normalize to 0-1 range
+        // Fetch data periodically from the API every 5 seconds
+        setInterval(fetchDataFromAPI, 5000); // Refresh every 5 seconds
 
-            // Find the mesh that holds the shape key
-            const targetMesh = mesh.getObjectByName('Torus'); // Mesh name is 'Torus'
-            if (targetMesh && targetMesh.morphTargetInfluences) {
-              console.log('Applying normalized value to shape key:', normalizedValue);
-              targetMesh.morphTargetInfluences[0] = normalizedValue; // Apply to Shape Key '00_SIZE'
-            } else {
-              console.error('Mesh with morph targets not found or no morph targets present on Torus!');
-            }
-
-            animate();
-          });
       }, undefined, function(error) {
         console.error('Error loading the model:', error);
       });
+    }
+
+    // Function to fetch data from the API
+    function fetchDataFromAPI() {
+      fetch('https://script.google.com/macros/s/AKfycbxerbcKauvIo5W6PGUlfn0QJwq7GdCSmvtZmScv4Q1efjd972X_h6KUEBwesyBLSTOC/exec')
+        .then(response => response.json())
+        .then(data => {
+          const assignedValue = data[0]['ColumnE-Row2']; // Use ColumnE-Row2 from API response
+          const normalizedValue = assignedValue / 5; // Normalize to 0-1 range
+
+          // Find the mesh that holds the shape key
+          const targetMesh = mesh.getObjectByName('Torus'); // Mesh name is 'Torus'
+          if (targetMesh && targetMesh.morphTargetInfluences) {
+            console.log('Applying normalized value to shape key:', normalizedValue);
+            targetMesh.morphTargetInfluences[0] = normalizedValue; // Apply to Shape Key '00_SIZE'
+          } else {
+            console.error('Mesh with morph targets not found or no morph targets present on Torus!');
+          }
+
+          animate();
+        });
     }
 
     // Animation loop
