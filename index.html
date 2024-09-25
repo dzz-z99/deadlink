@@ -1,135 +1,42 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>13D Model Viewer</title>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #000;
-            overflow: hidden;
-        }
-        canvas {
-            display: block;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iframe Website</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .button-link {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: #fff;
+      color: black;
+      padding: 10px 15px;
+      text-decoration: none;
+      border-radius: 5px;
+      z-index: 100;
+    }
+    .button-link:hover {
+      background-color: greenyellow;
+    }
+  </style>
 </head>
 <body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/GLTFLoader.js"></script>
-    
-    <script>
-        // Scene, Camera, Renderer setup
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);  // Improve rendering quality
-        document.body.appendChild(renderer.domElement);
-
-        // Move the camera closer for a more zoomed-in initial view
-        camera.position.set(0, 0, 0.3); 
-
-        // Add OrbitControls for zoom and rotation
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true; // Smooth control
-        controls.dampingFactor = 0.05;
-        controls.screenSpacePanning = false;
-        controls.enableZoom = true;
-        controls.zoomSpeed = 0.5; // Make zooming faster and more responsive
-        controls.maxDistance = 5;  // Restrict max distance
-
-        // Light setup (ambient + directional light)
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // Strong directional light
-        directionalLight.position.set(5, 5, 5);
-        scene.add(ambientLight);
-        scene.add(directionalLight);
-
-        // Load the 3D model
-        const loader = new THREE.GLTFLoader();
-        let pupilMesh;
-
-        loader.load('models/01_ShapKeyed_EyeBall.glb', function (gltf) {
-            const model = gltf.scene;
-
-            // Center the model geometry using its bounding box
-            const box = new THREE.Box3().setFromObject(model);
-            const center = box.getCenter(new THREE.Vector3());
-            model.position.sub(center); // Adjust position so the model is centered
-
-            model.scale.set(1.0, 1.0, 1.0); // Keep model larger
-            scene.add(model);
-
-            // Center the camera controls on the model
-            controls.target.copy(center);
-            controls.update();
-
-            // Find the 'Pupil' mesh and access its morph target
-            model.traverse(function (child) {
-                if (child.isMesh && child.name === 'Pupil') {
-                    pupilMesh = child;
-                }
-            });
-
-            animate();  // Start rendering after model is loaded
-            fetchAndUpdate(); // Start fetching API data for the first time
-
-            // Real-time API updates every 5 seconds
-            setInterval(fetchAndUpdate, 5000);
-        }, undefined, function (error) {
-            console.error('Error loading 3D model:', error);
-        });
-
-        // Define the min and max range of "Assigned Value"
-        const minValue = 0;
-        const maxValue = 10;  // Adjust based on the expected range from the API
-
-        // Function to fetch the dynamic value from the API and update the morph target
-        function fetchAndUpdate() {
-            fetch('https://script.googleusercontent.com/macros/echo?user_content_key=Fflmruejr3Wo1jyoVlmm2VC9-peixwr4Zsnif-T4yQ1j3KYNXylGhL-ponqbH7bgtcSKmFwa3JjgrBClAWvLRjEYhBt4KPwMm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnLOhP_Yv2g7cdzrEvHyGSNEVukO7LcfqB0E5Sla7ueR41jq5zjZBMj-uZS5JNTN58D-EWxpy17moBNLfIDa8OkjcGI7lhJ_ZLw&lib=MSykVP-T6JpMcNQKt2t8MtLlZCQc5u2io')
-                .then(response => response.json())
-                .then(data => {
-                    // Select the first item's "Assigned Value" (change if another is needed)
-                    const dynamicValue = data[0]['Assigned Value']; // Change [0] to any index needed
-                    
-                    // Normalize the dynamicValue to a range of 0 to 1
-                    const normalizedValue = (dynamicValue - minValue) / (maxValue - minValue);
-
-                    // Ensure the value is clamped between 0 and 1
-                    const clampedValue = Math.min(Math.max(normalizedValue, 0), 1);
-
-                    // Apply the clampedValue to the morph target if pupilMesh exists
-                    if (pupilMesh) {
-                        pupilMesh.morphTargetInfluences[0] = clampedValue;
-                    }
-                })
-                .catch(err => console.error('Error fetching API data:', err));
-        }
-
-        // Animation loop
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update(); // Update controls in the animation loop
-            renderer.render(scene, camera);
-        }
-
-        // Resize handling
-        window.addEventListener('resize', function () {
-            const width = window.innerWidth;
-            const height = window.innerHeight;
-            renderer.setSize(width, height);
-            camera.aspect = width / height;
-            camera.updateProjectionMatrix();
-        });
-    </script>
+  <a href="https://talmetal.me/metal" class="button-link">dead link</a>
+  <iframe src="https://economybooks.info/test.html"></iframe>
 </body>
 </html>
