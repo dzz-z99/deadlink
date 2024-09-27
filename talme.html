@@ -7,10 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <style>
         body {
-            filter: brightness(130%);
-        }
-                body.inverted {
-            filter: brightness(200%);
+            transition: filter 2s ease-in-out;
         }
     </style>
 </head>
@@ -18,10 +15,14 @@
     <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTEftNhPefZb7l7Di6IFZUWDrFV9PtBXbRxXakux0hlrBw0cjVeA0yq4Jku13_WGaijv9BfWq41aqMv/pubhtml"></iframe>
 
     <script>
+        let inverted = false;
         setInterval(() => {
-            document.body.classList.toggle('inverted');
-        }, 1000);
+            inverted = !inverted;
+            document.body.style.filter = inverted ? 'brightness(150%)' : 'brightness(200%)';
+        }, 2000);
     </script>
 </body>
 </html>
+
+
 
