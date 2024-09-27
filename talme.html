@@ -5,11 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>dead link</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        body.inverted {
+            filter: invert(1);
+        }
+    </style>
 </head>
 <body>
     <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTEftNhPefZb7l7Di6IFZUWDrFV9PtBXbRxXakux0hlrBw0cjVeA0yq4Jku13_WGaijv9BfWq41aqMv/pubhtml"></iframe>
 
-/* https://docs.google.com/spreadsheets/d/e/2PACX-1vTEftNhPefZb7l7Di6IFZUWDrFV9PtBXbRxXakux0hlrBw0cjVeA0yq4Jku13_WGaijv9BfWq41aqMv/pubhtml?gid=1617113852 */
-
+    <script>
+        setInterval(() => {
+            document.body.classList.toggle('inverted');
+        }, 2000);
+    </script>
 </body>
 </html>
+
