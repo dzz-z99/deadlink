@@ -16,13 +16,16 @@
 
     <script>
         let inverted = false;
-        setInterval(() => {
+        
+        function setRandomInterval() {
+            const randomInterval = Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000; // Random between 1s (1000ms) and 10s (10000ms)
             inverted = !inverted;
             document.body.style.filter = inverted ? 'brightness(100%)' : 'brightness(200%)';
-        }, 4000);
+            
+            setTimeout(setRandomInterval, randomInterval); // Set the next interval with a random value
+        }
+
+        setRandomInterval(); // Start the random interval process
     </script>
 </body>
 </html>
-
-
-
