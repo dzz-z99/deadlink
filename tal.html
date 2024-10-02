@@ -11,6 +11,7 @@
       padding: 0;
       height: 100%;
       overflow: hidden;
+      transition: filter 2s ease-in-out;
     }
     iframe {
       position: absolute;
@@ -40,5 +41,18 @@
   <a href="https://talmetal.me/talme" class="button-link">dead link</a>
   <iframe src="https://economybooks.info/mosaic.html"></iframe>
 </body>
+      <script>
+        let inverted = false;
+        
+        function setRandomInterval() {
+            const randomInterval = Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000; // Random between 1s (1000ms) and 10s (10000ms)
+            inverted = !inverted;
+            document.body.style.filter = inverted ? 'brightness(100%)' : 'brightness(200%)';
+            
+            setTimeout(setRandomInterval, randomInterval); // Set the next interval with a random value
+        }
+
+        setRandomInterval(); // Start the random interval process
+    </script>
 </html>
 
