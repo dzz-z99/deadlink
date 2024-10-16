@@ -4,32 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>dead link</title>
-    <link rel="stylesheet" href="style.css">
     <style>
-
-                html {
-    overflow: hidden;
-}
-        
+        /* Integrated CSS from style.css */
+        html {
+            overflow: hidden;
+        }
         body {
             margin: 0;
             padding: 0;
-            font-family: times;
+            /* background-color: blueviolet; */
+        }
+        iframe {
+            width: 100dvw;
+            height: 110dvh;
+            border: 0;
+            /* filter: grayscale(100%); */
+        }
+        @media(max-width: 600px) {
+            iframe {
+                /* transform: scale(1.3); */
+                margin-top: -100px;
+                height: 150dvh;
+            }
         }
 
-iframe {
-    width: 100dvw;
-    height: 110dvh;
-    border: 0;
-}
-
-@media(max-width: 600px) {
-    iframe {
-        /* transform: scale(1.3); */
-        margin-top: -100px;
-        height: 150dvh;
-    }
-}
+        /* Existing styles */
+        body {
+            transition: filter 2s ease-in-out;
+        }
         
         .button-link {
             position: absolute;
@@ -48,22 +50,24 @@ iframe {
             background-color: greenyellow;
         }
 
-        /* Style for the blinking values */
+        /* Blinking values container */
         #dataContainer {
-            position: absolute;
+            position: fixed;
             top: 0;
+            left: 0;
             width: 100%;
-            height: 100vh; /* Full height of the window */
+            height: 100vh; /* Full height */
             display: flex;
             flex-direction: column;
-            justify-content: space-around; /* Distributes space evenly */
+            justify-content: space-around; /* Dynamic spacing between values */
             align-items: center;
-            z-index: 999; /* Make sure it's on top */
-            pointer-events: none; /* Allow clicks to pass through to the iframe */
+            z-index: 999; /* On top of everything */
+            pointer-events: none; /* Allow interaction with iframe */
         }
 
         .value {
             color: red;
+            font-weight: bold;
             font-size: 24px;
         }
 
@@ -85,8 +89,7 @@ iframe {
     
     <!-- Original button link and iframe content -->
     <a href="https://talmetal.me" class="button-link">dead link</a>
-    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTEftNhPefZb7l7Di6IFZUWDrFV9PtBXbRxXakux0hlrBw0cjVeA0yq4Jku13_WGaijv9BfWq41aqMv/pubhtml" 
-    style="width: 100%; height: 100vh; border: none;"></iframe>
+    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTEftNhPefZb7l7Di6IFZUWDrFV9PtBXbRxXakux0hlrBw0cjVeA0yq4Jku13_WGaijv9BfWq41aqMv/pubhtml"></iframe>
 
     <script>
         // Random brightness effect
