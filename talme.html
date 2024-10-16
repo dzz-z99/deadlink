@@ -8,26 +8,82 @@
     <style>
         body {
             transition: filter 2s ease-in-out;
+            margin: 0;
+            padding: 0;
         }
+
+        /* Positioning the data display container at the top */
+        #apiDataContainer {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        #dataContainer {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.9); /* Slight transparency */
+            padding: 10px;
+            border-radius: 8px;
+            width: auto;
+        }
+
+        .value {
+            color: red;
+            font-size: 20px;
+        }
+
+        /* Blinking animation */
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .blinking {
+            animation: blink 1s infinite;
+        }
+
         .button-link {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: #fff;
-      color: black;
-      padding: 10px 15px;
-      text-decoration: none;
-      border-radius: 5px;
-      z-index: 100;
-      border: 0.5px solid black;
-    }
-    .button-link:hover {
-      background-color: greenyellow;
-    }
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #fff;
+            color: black;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            z-index: 100;
+            border: 0.5px solid black;
+        }
+
+        .button-link:hover {
+            background-color: greenyellow;
+        }
+
+        iframe {
+            width: 100%;
+            height: calc(100vh - 100px);
+            border: none;
+        }
     </style>
 </head>
 <body>
-      <a href="https://talmetal.me" class="button-link">dead link</a>
+    <a href="https://talmetal.me" class="button-link">dead link</a>
+    
+    <!-- API data display container -->
+    <div id="apiDataContainer">
+        <div id="dataContainer"></div>
+    </div>
+
+    <!-- Existing iframe content -->
     <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTEftNhPefZb7l7Di6IFZUWDrFV9PtBXbRxXakux0hlrBw0cjVeA0yq4Jku13_WGaijv9BfWq41aqMv/pubhtml"></iframe>
 
     <script>
@@ -42,6 +98,57 @@
         }
 
         setRandomInterval(); // Start the random interval process
+
+        // API fetching logic
+        const apiUrl = 'https://script.google.com/macros/s/AKfycbxerbcKauvIo5W6PGUlfn0QJwq7GdCSmvtZmScv4Q1efjd972X_h6KUEBwesyBLSTOC/exec';
+
+        // Function to fetch API data
+        async function fetchApiData() {
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                displayData(data);
+            } catch (error) {
+                console.error('Error fetching API data:', error);
+            }
+        }
+
+        // Function to format the number
+        function formatNumber(value) {
+            if (Math.floor(value) === value) {
+                return value; // No decimal places needed if it's a whole number
+            } else {
+                return value.toFixed(2).replace(/\.?0+$/, ''); // Show up to 2 decimals if needed, but strip trailing zeros
+            }
+        }
+
+        // Function to display data on the page
+        function displayData(data) {
+            const container = document.getElementById('dataContainer');
+            container.innerHTML = ''; // Clear previous data
+
+            const keysToDisplay = [
+                "ColumnE-Row2", "ColumnE-Row3", "ColumnE-Row4",
+                "ColumnE-Row5", "ColumnE-Row6", "ColumnE-Row7",
+                "ColumnE-Row8", "ColumnE-Row9", "ColumnE-Row10", "ColumnE-Row11"
+            ];
+
+            keysToDisplay.forEach(key => {
+                const valueObject = data.find(obj => obj.hasOwnProperty(key));
+                if (valueObject) {
+                    let value = valueObject[key];
+                    value = formatNumber(parseFloat(value)); // Format the number
+                    const valueDiv = document.createElement('div');
+                    valueDiv.className = 'value blinking'; // Add blinking effect
+                    valueDiv.textContent = `${value}`; // Display value only
+                    container.appendChild(valueDiv);
+                }
+            });
+        }
+
+        // Fetch data initially and then every 30 seconds
+        fetchApiData();
+        setInterval(fetchApiData, 30000); // Refresh every 30 seconds
     </script>
 </body>
 </html>
