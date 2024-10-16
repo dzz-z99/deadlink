@@ -12,7 +12,6 @@
             padding: 0;
         }
         
-        /* Style for the "dead link" button */
         .button-link {
             position: absolute;
             top: 10px;
@@ -30,18 +29,17 @@
             background-color: greenyellow;
         }
 
-        /* Container to cover the full width of the window for the API values */
+        /* Style for the blinking values */
         #dataContainer {
+            position: absolute;
+            top: 0;
+            width: 100%;
             display: flex;
             flex-direction: column;
             justify-content: space-around; /* Distributes space evenly */
             align-items: center;
-            width: 100%;
-            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
-            position: fixed;
-            top: 0;
-            z-index: 99; /* Above the iframe */
-            padding: 10px 0;
+            z-index: 999; /* Make sure it's on top */
+            pointer-events: none; /* Allow clicks to pass through to the iframe */
         }
 
         .value {
@@ -63,15 +61,13 @@
     </style>
 </head>
 <body>
-    <!-- API Data Display -->
+    <!-- API Data Display (blinking values) -->
     <div id="dataContainer"></div>
     
-    <!-- Button Link -->
+    <!-- Original button link and iframe content -->
     <a href="https://talmetal.me" class="button-link">dead link</a>
-    
-    <!-- Google Sheets Iframe -->
     <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTEftNhPefZb7l7Di6IFZUWDrFV9PtBXbRxXakux0hlrBw0cjVeA0yq4Jku13_WGaijv9BfWq41aqMv/pubhtml" 
-    style="width: 100%; height: calc(100vh - 50px); border: none; position: relative; top: 50px;"></iframe>
+    style="width: 100%; height: 100vh; border: none;"></iframe>
 
     <script>
         // Random brightness effect
