@@ -11,46 +11,8 @@
             margin: 0;
             padding: 0;
         }
-
-        /* Positioning the data display container at the top */
-        #apiDataContainer {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            z-index: 100;
-        }
-
-        #dataContainer {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            align-items: center;
-            background-color: rgba(255, 255, 255, 0.9); /* Slight transparency */
-            padding: 10px;
-            border-radius: 8px;
-            width: auto;
-        }
-
-        .value {
-            color: red;
-            font-size: 20px;
-        }
-
-        /* Blinking animation */
-        @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        .blinking {
-            animation: blink 1s infinite;
-        }
-
+        
+        /* Style for the "dead link" button */
         .button-link {
             position: absolute;
             top: 10px;
@@ -68,27 +30,53 @@
             background-color: greenyellow;
         }
 
-        iframe {
+        /* Container to cover the full width of the window for the API values */
+        #dataContainer {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around; /* Distributes space evenly */
+            align-items: center;
             width: 100%;
-            height: calc(100vh - 100px);
-            border: none;
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+            position: fixed;
+            top: 0;
+            z-index: 99; /* Above the iframe */
+            padding: 10px 0;
+        }
+
+        .value {
+            color: red;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        /* Blinking animation */
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .blinking {
+            animation: blink 1s infinite; /* Blinking every 1 second */
         }
     </style>
 </head>
 <body>
+    <!-- API Data Display -->
+    <div id="dataContainer"></div>
+    
+    <!-- Button Link -->
     <a href="https://talmetal.me" class="button-link">dead link</a>
     
-    <!-- API data display container -->
-    <div id="apiDataContainer">
-        <div id="dataContainer"></div>
-    </div>
-
-    <!-- Existing iframe content -->
-    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTEftNhPefZb7l7Di6IFZUWDrFV9PtBXbRxXakux0hlrBw0cjVeA0yq4Jku13_WGaijv9BfWq41aqMv/pubhtml"></iframe>
+    <!-- Google Sheets Iframe -->
+    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTEftNhPefZb7l7Di6IFZUWDrFV9PtBXbRxXakux0hlrBw0cjVeA0yq4Jku13_WGaijv9BfWq41aqMv/pubhtml" 
+    style="width: 100%; height: calc(100vh - 50px); border: none; position: relative; top: 50px;"></iframe>
 
     <script>
+        // Random brightness effect
         let inverted = false;
-        
+
         function setRandomInterval() {
             const randomInterval = Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000; // Random between 1s (1000ms) and 10s (10000ms)
             inverted = !inverted;
@@ -99,7 +87,7 @@
 
         setRandomInterval(); // Start the random interval process
 
-        // API fetching logic
+        // API URL
         const apiUrl = 'https://script.google.com/macros/s/AKfycbxerbcKauvIo5W6PGUlfn0QJwq7GdCSmvtZmScv4Q1efjd972X_h6KUEBwesyBLSTOC/exec';
 
         // Function to fetch API data
