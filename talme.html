@@ -30,6 +30,8 @@
 
         /* Existing styles */
         body {
+            margin: 0;
+            padding: 0;
             transition: filter 2s ease-in-out;
         }
         
@@ -71,7 +73,7 @@
             font-size: 24px;
         }
 
-        /* Blinking animation */
+        /* Blinking animation without transition */
         @keyframes blink {
             0% { opacity: 1; }
             50% { opacity: 0; }
@@ -79,7 +81,15 @@
         }
 
         .blinking {
-            animation: blink 2s infinite; /* Blinking every 1 second */
+            animation: blink 2s steps(1) infinite; /* Immediate blink without transition */
+        }
+
+        /* Ensure responsive height adjustment for mobile */
+        @media(max-width: 600px) {
+            #dataContainer {
+                height: 100vh; /* Full height on phone screens */
+                justify-content: space-around; /* Dynamic spacing on smaller screens */
+            }
         }
     </style>
 </head>
