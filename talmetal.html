@@ -12,24 +12,40 @@
       overflow: hidden;
       transition: filter 2s ease-in-out;
     }
-    iframe {
+    /* Existing iframe container */
+    .iframe-container {
       position: absolute;
       top: 0;
       left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      overflow-y: auto; /* Enable vertical scrolling */
+      overflow-x: hidden; /* Hide horizontal overflow */
+    }
+    .background-iframe {
+      width: 100%;
       height: 100%;
       border: none;
     }
-    /* Existing iframe styling */
-    .background-iframe {
+    /* Overlay iframe container */
+    .overlay-container {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      z-index: 1; /* Place below the overlay iframe */
+      height: 100%;
+      z-index: 2;
+      overflow-x: auto; /* Enable horizontal scrolling */
+      overflow-y: hidden; /* Prevent vertical scrolling */
     }
     /* New iframe overlay with multiply effect */
     .iframe-overlay {
       width: 200%; /* Adjust as needed */
+      height: 100%;
+      border: none;
       mix-blend-mode: multiply; /* Apply multiply effect */
-      z-index: 2; /* Place above the existing iframe */
-      pointer-events: none; /* Allow pointer events to pass through */
+      pointer-events: auto; /* Allow pointer events */
     }
     .button-link {
       position: absolute;
@@ -40,7 +56,7 @@
       padding: 10px 15px;
       text-decoration: none;
       border-radius: 5px;
-      z-index: 3; /* Ensure it's above both iframes */
+      z-index: 3; /* Ensure it's above all other content */
       border: 0.5px solid black;
     }
     .button-link:hover {
@@ -50,39 +66,32 @@
 </head>
 <body>
   <a href="https://talmetal.me/talme" class="button-link">dead link</a>
-  
-  <!-- Existing iframe -->
-  <iframe class="background-iframe" src="https://economybooks.info/mosaic.html"></iframe>
-  
-  <!-- New iframe overlay with multiply effect -->
-  <iframe class="iframe-overlay" src="https://talmetal.me/talme"></iframe>
-  
+
+  <!-- Container with the existing iframe -->
+  <div class="iframe-container">
+    <iframe class="background-iframe" src="https://economybooks.info/mosaic.html"></iframe>
+  </div>
+
+  <!-- Overlay iframe container -->
+  <div class="overlay-container">
+    <iframe class="iframe-overlay" src="https://talmetal.me/talme"></iframe>
+  </div>
+
   <script>
     // Existing script for brightness effect
     let inverted = false;
-    
+
     function setRandomInterval() {
       const randomInterval = Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000; // Random between 1s and 10s
       inverted = !inverted;
       document.body.style.filter = inverted ? 'brightness(100%)' : 'brightness(200%)';
-      
+
       setTimeout(setRandomInterval, randomInterval); // Set the next interval
     }
 
     setRandomInterval(); // Start the process
 
-    // New script to handle horizontal scrolling of the overlay iframe
-    const overlayIframe = document.querySelector('.iframe-overlay');
-
-    window.addEventListener('wheel', function(event) {
-      if (event.deltaX !== 0) {
-        // Prevent default horizontal scroll
-        event.preventDefault();
-        // Scroll the iframe element horizontally
-        overlayIframe.scrollLeft += event.deltaX;
-      }
-      // Vertical scroll events will pass through to the underlying iframe
-    }, { passive: false });
+    // No additional JavaScript needed for scrolling
   </script>
 </body>
 </html>
