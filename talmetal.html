@@ -8,29 +8,34 @@
     body, html {
       margin: 0;
       padding: 0;
-      /* Removed overflow: hidden; to allow scrolling */
+      height: 100%;
+      overflow: hidden;
       transition: filter 2s ease-in-out;
     }
-    /* Background iframe styling */
+    /* Existing iframe styling */
     .background-iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      height: auto; /* Allows the iframe to adjust to its content height */
-      position: relative; /* Keeps it in the normal flow */
+      height: 100%;
+      border: none;
       z-index: 1; /* Place below the overlay iframe */
     }
-    /* Overlay iframe with multiply effect */
+    /* New iframe overlay with multiply effect */
     .iframe-overlay {
-      position: fixed; /* Stays fixed over the viewport */
+      position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       border: none;
       mix-blend-mode: multiply; /* Apply multiply effect */
-      z-index: 2; /* Place above the background iframe */
+      z-index: 2; /* Place above the existing iframe */
+      pointer-events: none; /* Allow interaction with underlying content */
     }
     .button-link {
-      position: fixed; /* Stays fixed over the viewport */
+      position: absolute;
       top: 10px;
       left: 10px;
       background-color: #fff;
@@ -49,12 +54,12 @@
 <body>
   <a href="https://talmetal.me/talme" class="button-link">dead link</a>
   
-  <!-- Background iframe -->
+  <!-- Existing iframe -->
   <iframe class="background-iframe" src="https://economybooks.info/mosaic.html"></iframe>
   
-  <!-- Overlay iframe with multiply effect -->
+  <!-- New iframe overlay with multiply effect -->
   <iframe class="iframe-overlay" src="https://talmetal.me/talme"></iframe>
-  
+
   <script>
     let inverted = false;
     
