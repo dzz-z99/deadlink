@@ -2,42 +2,35 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>dead link</title>
   <style>
     body, html {
       margin: 0;
       padding: 0;
-      /* Remove overflow: hidden; to allow vertical scrolling */
-      /* overflow: hidden; */
+      /* Removed overflow: hidden; to allow scrolling */
       transition: filter 2s ease-in-out;
     }
-    /* Existing iframe styling */
+    /* Background iframe styling */
     .background-iframe {
       width: 100%;
-      height: auto; /* Allow height to adjust based on content */
-      border: none;
+      height: auto; /* Allows the iframe to adjust to its content height */
+      position: relative; /* Keeps it in the normal flow */
+      z-index: 1; /* Place below the overlay iframe */
     }
-    /* Wrapper for horizontal scrolling */
-    .horizontal-scroll-wrapper {
-      overflow-x: auto; /* Enable horizontal scrolling */
-      overflow-y: hidden; /* Prevent vertical scrolling on the overlay */
-      position: fixed;    /* Fixed position to cover viewport */
+    /* Overlay iframe with multiply effect */
+    .iframe-overlay {
+      position: fixed; /* Stays fixed over the viewport */
       top: 0;
       left: 0;
       width: 100%;
-      height: 100vh;      /* Full viewport height */
-      z-index: 2;
-      pointer-events: auto; /* Allow horizontal scrolling */
-    }
-    /* New iframe overlay with multiply effect */
-    .iframe-overlay {
-      width: 200%;        /* Extend width to enable horizontal scrolling */
       height: 100%;
       border: none;
-      mix-blend-mode: multiply;
+      mix-blend-mode: multiply; /* Apply multiply effect */
+      z-index: 2; /* Place above the background iframe */
     }
     .button-link {
-      position: fixed;
+      position: fixed; /* Stays fixed over the viewport */
       top: 10px;
       left: 10px;
       background-color: #fff;
@@ -45,7 +38,7 @@
       padding: 10px 15px;
       text-decoration: none;
       border-radius: 5px;
-      z-index: 3;
+      z-index: 3; /* Ensure it's above both iframes */
       border: 0.5px solid black;
     }
     .button-link:hover {
@@ -56,14 +49,11 @@
 <body>
   <a href="https://talmetal.me/talme" class="button-link">dead link</a>
   
-  <!-- Existing iframe -->
+  <!-- Background iframe -->
   <iframe class="background-iframe" src="https://economybooks.info/mosaic.html"></iframe>
   
-  <!-- Wrapper for horizontal scrolling -->
-  <div class="horizontal-scroll-wrapper">
-    <!-- New iframe overlay with multiply effect -->
-    <iframe class="iframe-overlay" src="https://talmetal.me/talme"></iframe>
-  </div>
+  <!-- Overlay iframe with multiply effect -->
+  <iframe class="iframe-overlay" src="https://talmetal.me/talme"></iframe>
   
   <script>
     let inverted = false;
