@@ -2,34 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>dead link</title>
   <style>
     body, html {
       margin: 0;
       padding: 0;
-      height: 100%;
+      /* Remove overflow: hidden; to allow vertical scrolling */
+      /* overflow: hidden; */
       transition: filter 2s ease-in-out;
-    }
-    iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
     }
     /* Existing iframe styling */
     .background-iframe {
-      z-index: 1; /* Place below the overlay iframe */
+      width: 100%;
+      height: auto; /* Allow height to adjust based on content */
+      border: none;
+    }
+    /* Wrapper for horizontal scrolling */
+    .horizontal-scroll-wrapper {
+      overflow-x: auto; /* Enable horizontal scrolling */
+      overflow-y: hidden; /* Prevent vertical scrolling on the overlay */
+      position: fixed;    /* Fixed position to cover viewport */
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;      /* Full viewport height */
+      z-index: 2;
+      pointer-events: auto; /* Allow horizontal scrolling */
     }
     /* New iframe overlay with multiply effect */
     .iframe-overlay {
-      mix-blend-mode: multiply; /* Apply multiply effect */
-      z-index: 2; /* Place above the existing iframe */
+      width: 200%;        /* Extend width to enable horizontal scrolling */
+      height: 100%;
+      border: none;
+      mix-blend-mode: multiply;
     }
     .button-link {
-      position: absolute;
+      position: fixed;
       top: 10px;
       left: 10px;
       background-color: #fff;
@@ -37,7 +45,7 @@
       padding: 10px 15px;
       text-decoration: none;
       border-radius: 5px;
-      z-index: 3; /* Ensure it's above both iframes */
+      z-index: 3;
       border: 0.5px solid black;
     }
     .button-link:hover {
@@ -51,8 +59,11 @@
   <!-- Existing iframe -->
   <iframe class="background-iframe" src="https://economybooks.info/mosaic.html"></iframe>
   
-  <!-- New iframe overlay with multiply effect -->
-  <iframe class="iframe-overlay" src="https://talmetal.me/talme"></iframe>
+  <!-- Wrapper for horizontal scrolling -->
+  <div class="horizontal-scroll-wrapper">
+    <!-- New iframe overlay with multiply effect -->
+    <iframe class="iframe-overlay" src="https://talmetal.me/talme"></iframe>
+  </div>
   
   <script>
     let inverted = false;
