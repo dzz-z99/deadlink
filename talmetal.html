@@ -12,27 +12,23 @@
       overflow: hidden;
       transition: filter 2s ease-in-out;
     }
-    /* Existing iframe styling */
-    .background-iframe {
+    iframe {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       border: none;
+    }
+    /* Existing iframe styling */
+    .background-iframe {
       z-index: 1; /* Place below the overlay iframe */
     }
     /* New iframe overlay with multiply effect */
     .iframe-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
       mix-blend-mode: multiply; /* Apply multiply effect */
       z-index: 2; /* Place above the existing iframe */
-      pointer-events: none; /* Allow interaction with underlying content */
+      pointer-events: none; /* Allow pointer events to pass through */
     }
     .button-link {
       position: absolute;
@@ -59,19 +55,33 @@
   
   <!-- New iframe overlay with multiply effect -->
   <iframe class="iframe-overlay" src="https://talmetal.me/talme"></iframe>
-
+  
   <script>
+    // Existing script for brightness effect
     let inverted = false;
     
     function setRandomInterval() {
-        const randomInterval = Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000; // Random between 1s and 10s
-        inverted = !inverted;
-        document.body.style.filter = inverted ? 'brightness(100%)' : 'brightness(200%)';
-        
-        setTimeout(setRandomInterval, randomInterval); // Set the next interval
+      const randomInterval = Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000; // Random between 1s and 10s
+      inverted = !inverted;
+      document.body.style.filter = inverted ? 'brightness(100%)' : 'brightness(200%)';
+      
+      setTimeout(setRandomInterval, randomInterval); // Set the next interval
     }
 
     setRandomInterval(); // Start the process
+
+    // New script to handle horizontal scrolling of the overlay iframe
+    const overlayIframe = document.querySelector('.iframe-overlay');
+
+    window.addEventListener('wheel', function(event) {
+      if (event.deltaX !== 0) {
+        // Prevent default horizontal scroll
+        event.preventDefault();
+        // Scroll the overlay iframe horizontally
+        overlayIframe.contentWindow.scrollBy(event.deltaX, 0);
+      }
+      // Allow vertical scrolling to pass through to the underlying iframe
+    }, { passive: false }); // Set passive to false to allow preventDefault()
   </script>
 </body>
 </html>
