@@ -16,16 +16,17 @@
       position: absolute;
       top: 0;
       left: 0;
-      width: 100%;
       height: 100%;
       border: none;
     }
     /* Existing iframe styling */
     .background-iframe {
+      width: 100%;
       z-index: 1; /* Place below the overlay iframe */
     }
     /* New iframe overlay with multiply effect */
     .iframe-overlay {
+      width: 200%; /* Adjust as needed */
       mix-blend-mode: multiply; /* Apply multiply effect */
       z-index: 2; /* Place above the existing iframe */
       pointer-events: none; /* Allow pointer events to pass through */
@@ -77,11 +78,11 @@
       if (event.deltaX !== 0) {
         // Prevent default horizontal scroll
         event.preventDefault();
-        // Scroll the overlay iframe horizontally
-        overlayIframe.contentWindow.scrollBy(event.deltaX, 0);
+        // Scroll the iframe element horizontally
+        overlayIframe.scrollLeft += event.deltaX;
       }
-      // Allow vertical scrolling to pass through to the underlying iframe
-    }, { passive: false }); // Set passive to false to allow preventDefault()
+      // Vertical scroll events will pass through to the underlying iframe
+    }, { passive: false });
   </script>
 </body>
 </html>
