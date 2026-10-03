@@ -20,15 +20,6 @@
       height: 100%;
       border: none;
     }
-    /* Existing iframe styling */
-    .background-iframe {
-      z-index: 1; /* Place below the overlay iframe */
-    }
-    /* New iframe overlay with multiply effect */
-    .iframe-overlay {
-      mix-blend-mode: multiply; /* Apply multiply effect */
-      z-index: 2; /* Place above the existing iframe */
-    }
     .button-link {
       position: absolute;
       top: 10px;
@@ -38,7 +29,7 @@
       padding: 10px 15px;
       text-decoration: none;
       border-radius: 5px;
-      z-index: 3; /* Ensure it's above both iframes */
+      z-index: 100;
       border: 0.5px solid black;
     }
     .button-link:hover {
@@ -48,25 +39,19 @@
 </head>
 <body>
   <a href="https://talmetal.me/" class="button-link">dead link</a>
-  
-  <!-- Existing iframe -->
-  <iframe class="background-iframe" src="https://economybooks.info/mosaic_image_reorder.html"></iframe>
-  
-  <!-- New iframe overlay with multiply effect -->
-  <iframe class="iframe-overlay" src="https://talmetal.me/talme"></iframe>
-  
-  <script>
-    let inverted = false;
-    
-    function setRandomInterval() {
-        const randomInterval = Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000; // Random between 1s and 10s
-        inverted = !inverted;
-        document.body.style.filter = inverted ? 'brightness(100%)' : 'brightness(200%)';
-        
-        setTimeout(setRandomInterval, randomInterval); // Set the next interval
-    }
-
-    setRandomInterval(); // Start the process
-  </script>
+  <iframe src="https://economybooks.info/test8.html"></iframe>
 </body>
+      <script>
+        let inverted = false;
+        
+        function setRandomInterval() {
+            const randomInterval = Math.floor(Math.random() * (10000 - 1000 + 1)) + 1000; // Random between 1s (1000ms) and 10s (10000ms)
+            inverted = !inverted;
+            document.body.style.filter = inverted ? 'brightness(100%)' : 'brightness(200%)';
+            
+            setTimeout(setRandomInterval, randomInterval); // Set the next interval with a random value
+        }
+
+        setRandomInterval(); // Start the random interval process
+    </script>
 </html>
