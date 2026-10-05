@@ -44,11 +44,28 @@
     .button-link:hover {
       background-color: greenyellow;
     }
+
+        .button-link2 {
+      position: absolute;
+      top: 59.5px;
+      left: 10px;
+      background-color: #fff;
+      color: black;
+      padding: 10px 15px;
+      text-decoration: none;
+      border-radius: 5px;
+      z-index: 3; /* Ensure it's above both iframes */
+      border: 0.5px solid black;
+    }
+
+        .button-link2:hover {
+      background-color: greenyellow;
+    }
   </style>
 </head>
 <body>
   <a href="https://talmetal.me/tal" class="button-link">&#8195;</a>
-  <a href="https://talmetal.me/taal" class="button-link">&#8195;</a>
+  <a href="https://talmetal.me/taal" class="button-link2">&#8195;</a>
   
   <!-- Existing iframe -->
   <iframe class="background-iframe" src="https://economybooks.info/mosaic_image_reorder.html"></iframe>
